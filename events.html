@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Event Log — World Simulation{% endblock %}
+{% block content %}
+
+<div class="hero-row">
+    <h1>Event Log</h1>
+    <div class="meta">{{ events|length }} events shown</div>
+</div>
+
+<form class="filters" method="get" action="/events">
+    <select name="clan">
+        <option value="">All Clans</option>
+        {% for c in clan_names %}
+        <option value="{{ c }}" {{ 'selected' if current_clan == c else '' }}>{{ clan_lore[c].icon }} {{ c }}</option>
+        {% endfor %}
+    </select>
+    <select name="category">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+        <option value="{{ cat }}" {{ 'selected' if current_category == cat else '' }}>{{ cat }}</option>
+        {% endfor %}
+    </select>
+    <input type="text" name="q" placeholder="Search narrative text…" value="{{ current_search }}">
+    <button class="btn" type="submit">Filter</button>
+    <a class="btn" href="/events">Reset</a>
+</form>
+
+<div class="event-list">
+    {% for e in events %}
+    <div class="event-item">
+        <div class="e-head">
+            <span class="badge {{ e.severity }}">{{ e.severity }}</span>
+            <span class="e-title">{{ e.title }}</span>
+            <span class="e-year">Year {{ e.sim_year }}, Day {{ e.sim_day }}</span>
+            <span class="e-clans">{{ e.clans_involved | join(', ') }}</span>
+        </div>
+        <div class="e-narrative">{{ e.narrative }}</div>
+    </div>
+    {% else %}
+    <div class="empty-state">No events match these filters.</div>
+    {% endfor %}
+</div>
+
+{% endblock %}

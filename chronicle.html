@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Chronicle — World Simulation{% endblock %}
+{% block content %}
+
+<div class="hero-row">
+    <h1>The Chronicle</h1>
+    <div class="meta">{{ summaries|length }} years recorded</div>
+</div>
+
+{% for s in summaries %}
+<div class="chronicle-year-label">Year {{ s.sim_year }}</div>
+<div class="chronicle-entry">{{ s.embed_json.description }}</div>
+{% else %}
+<div class="empty-state">The first year hasn't concluded yet. Check back once the world has lived a little.</div>
+{% endfor %}
+
+{% endblock %}

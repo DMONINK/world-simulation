@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}World Simulation{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+{% block head %}{% endblock %}
+</head>
+<body>
+<header class="topbar">
+    <a href="/" class="brand">⚔️ <span>World Simulation</span></a>
+    <nav class="topnav">
+        <a href="/" class="{{ 'active' if request.path == '/' else '' }}">Dashboard</a>
+        <a href="/map" class="{{ 'active' if request.path == '/map' else '' }}">Map</a>
+        <a href="/events" class="{{ 'active' if request.path == '/events' else '' }}">Events</a>
+        <a href="/chronicle" class="{{ 'active' if request.path == '/chronicle' else '' }}">Chronicle</a>
+    </nav>
+</header>
+<main class="page">
+{% block content %}{% endblock %}
+</main>
+<footer class="footer">
+    <span>A living world, ticking once per second.</span>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+<script src="{{ url_for('static', filename='sim.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

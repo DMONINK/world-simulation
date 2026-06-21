@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — World Simulation{% endblock %}
+{% block content %}
+
+{% if victory %}
+<div class="victory-banner">
+    <h2>👑 The {{ victory.winner }} Have Won the World</h2>
+    <div>Victory achieved in Sim Year {{ victory.year }}. The simulation has reached its end — see the <a href="/chronicle">Chronicle</a> for the full story.</div>
+</div>
+{% endif %}
+
+<div class="hero-row">
+    <h1>The World, Right Now</h1>
+    <div class="meta" id="simClock">Sim Year <b id="simYear">{{ summary.sim_year }}</b> · Day <b id="simDay">{{ summary.sim_day_of_year }}</b> of 365</div>
+</div>
+
+<div class="clan-grid" id="clanGrid">
+    {% for c in summary.clans %}
+    <div class="clan-card" style="--accent: {{ c.color }}" data-clan="{{ c.name }}">
+        <div class="ch-head">
+            <span class="ch-name">{{ c.icon }} {{ c.name }}</span>
+            <span class="ch-stage">{{ c.evolution_stage }}</span>
+        </div>
+        <div class="ch-stats">
+            <span>Pop <b>{{ "{:,}".format(c.population) }}</b></span>
+            <span>Territory <b>{{ c.territory_count }}</b> ({{ c.territory_share }}%)</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width: {{ c.territory_share }}%"></div></div>
+        <div class="status-tags">
+            {% if c.is_eliminated %}<span class="tag eliminated">Eliminated</span>{% endif %}
+            {% if c.is_last_bastion %}<span class="tag danger">Last Bastion</span>{% endif %}
+            {% if c.cornered %}<span class="tag danger">Cornered</span>{% endif %}
+            <a class="tag" href="{{ url_for('clan_page', clan_name=c.name) }}">View clan →</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="two-col">
+    <div>
+        <div class="section-title">Live Event Ticker</div>
+        <div class="ticker" id="ticker">
+            {% for e in summary.recent_events %}
+            <div class="ticker-item">
+                <span class="t-cat">{{ e.category }}</span>
+                <span class="t-text"><b>{{ e.title }}</b> — {{ e.narrative[:140] }}{% if e.narrative|length > 140 %}…{% endif %}</span>
+            </div>
+            {% else %}
+            <div class="empty-state">The world hasn't made any history yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+    <div>
+        <div class="section-title">World Map Preview</div>
+        <div class="ascii-map">{% for line in ascii_map %}{{ line }}
+{% endfor %}</div>
+        <p style="margin-top:10px;"><a href="/map">Open the full interactive map →</a></p>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+document.addEventListener('worldsim:tick', function (ev) {
+    var s = ev.detail;
+    document.getElementById('simYear').textContent = s.sim_year;
+    document.getElementById('simDay').textContent = s.sim_day_of_year;
+
+    var grid = document.getElementById('clanGrid');
+    s.clans.forEach(function (c) {
+        var card = grid.querySelector('[data-clan="' + c.name + '"]');
+        if (!card) return;
+        card.querySelector('.ch-stage').textContent = c.evolution_stage;
+        var stats = card.querySelectorAll('.ch-stats b');
+        stats[0].textContent = c.population.toLocaleString();
+        stats[1].textContent = c.territory_count;
+        card.querySelector('.bar-fill').style.width = c.territory_share + '%';
+    });
+
+    var ticker = document.getElementById('ticker');
+    if (s.recent_events && s.recent_events.length) {
+        ticker.innerHTML = s.recent_events.map(function (e) {
+            var text = e.narrative.length > 140 ? e.narrative.slice(0, 140) + '…' : e.narrative;
+            return '<div class="ticker-item"><span class="t-cat">' + e.category +
+                   '</span><span class="t-text"><b>' + e.title + '</b> — ' + text + '</span></div>';
+        }).join('');
+    }
+});
+</script>
+{% endblock %}

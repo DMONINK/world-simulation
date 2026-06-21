@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}World Map — World Simulation{% endblock %}
+{% block content %}
+
+<div class="hero-row">
+    <h1>The World Map</h1>
+    <div class="meta">{{ 200 }}×{{ 200 }} regions, rendered at reduced resolution. Click any cell to inspect it.</div>
+</div>
+
+<div class="map-layout">
+    <canvas id="mapCanvas" width="800" height="400"></canvas>
+    <div class="map-sidebar">
+        <div class="section-title">Region Detail</div>
+        <div id="regionDetail">
+            <div class="empty-state">Click a region on the map to see its details.</div>
+        </div>
+
+        <div class="legend">
+            {% for name, lore in clan_lore.items() %}
+            <div class="legend-item">
+                <span class="legend-dot" style="background: {{ lore.color }}"></span>{{ lore.icon }} {{ name }}
+            </div>
+            {% endfor %}
+            <div class="legend-item"><span class="legend-dot" style="background:#2a2a30"></span>Unclaimed</div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+    var canvas = document.getElementById('mapCanvas');
+    var ctx = canvas.getContext('2d');
+    var gridData = null;
+    var cellW = 0, cellH = 0;
+
+    function draw(data) {
+        gridData = data;
+        cellW = canvas.width / data.width;
+        cellH = canvas.height / data.height;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        data.cells.forEach(function (cell) {
+            ctx.fillStyle = cell.color;
+            ctx.fillRect(cell.rx * cellW, cell.ry * cellH, cellW, cellH);
+        });
+    }
+
+    fetch('/api/map/grid').then(function (r) { return r.json(); }).then(draw);
+
+    canvas.addEventListener('click', function (ev) {
+        if (!gridData) return;
+        var rect = canvas.getBoundingClientRect();
+        var scaleX = canvas.width / rect.width;
+        var scaleY = canvas.height / rect.height;
+        var x = (ev.clientX - rect.left) * scaleX;
+        var y = (ev.clientY - rect.top) * scaleY;
+        var rx = Math.floor(x / cellW);
+        var ry = Math.floor(y / cellH);
+        var cell = gridData.cells.find(function (c) { return c.rx === rx && c.ry === ry; });
+        if (!cell || cell.region_id === null) return;
+
+        fetch('/api/region/' + cell.region_id).then(function (r) { return r.json(); }).then(function (region) {
+            var html = '<div style="font-size:1.05rem;font-weight:700;margin-bottom:6px;">' + region.name + '</div>';
+            html += '<div style="color:var(--text-parchment-dim);font-size:0.85rem;line-height:1.6;">';
+            html += '<div>Biome: <b>' + region.biome + '</b></div>';
+            html += '<div>Owner: <b>' + (region.owner_clan || 'Unclaimed') + '</b></div>';
+            html += '<div>Fortification: <b>' + region.fortification + '</b></div>';
+            html += '<div>Population density: <b>' + region.population_density + '</b></div>';
+            if (region.resources && region.resources.length) {
+                html += '<div>Resources: <b>' + region.resources.join(', ') + '</b></div>';
+            }
+            if (region.is_rare_node) {
+                html += '<div style="color:#f4c430;margin-top:6px;">⭐ Rare node: ' + (region.rare_node_resource || '?') + '</div>';
+            }
+            if (region.is_last_bastion_for) {
+                html += '<div style="color:#ff6b6b;margin-top:6px;">🏰 Last Bastion of ' + region.is_last_bastion_for + '</div>';
+            }
+            html += '</div>';
+            document.getElementById('regionDetail').innerHTML = html;
+        });
+    });
+
+    setInterval(function () {
+        fetch('/api/map/grid').then(function (r) { return r.json(); }).then(draw);
+    }, 30000);
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}{{ clan_name }} — World Simulation{% endblock %}
+{% block content %}
+
+<div class="clan-hero" style="--accent: {{ lore.color }}">
+    <h1>{{ lore.icon }} {{ clan_name }}</h1>
+    <div class="full-name">{{ lore.full_name }}</div>
+    <p class="lore">{{ lore.lore }}</p>
+    {% if state %}
+    <div class="ch-stats" style="margin-top:14px;">
+        <span>Population <b>{{ "{:,}".format(state.population) }}</b></span>
+        <span>Territory <b>{{ state.territory_count }}</b> regions</span>
+        <span>Stage <b>{{ lore.evolution_path[evolution_index].stage }}</b></span>
+        {% if state.is_eliminated %}<span class="tag eliminated">Eliminated</span>{% endif %}
+        {% if state.is_last_bastion %}<span class="tag danger">Last Bastion</span>{% endif %}
+    </div>
+    {% endif %}
+    <p style="margin-top:14px; color:var(--text-parchment-dim); font-size:0.88rem;"><i>Strategy:</i> {{ lore.strategic_personality }}</p>
+</div>
+
+<div class="two-col">
+    <div>
+        <div class="section-title">Traits</div>
+        <ul class="trait-list">
+            {% for t in lore.traits %}
+            <li><b>{{ t.name }}</b>{{ t.desc }}</li>
+            {% endfor %}
+        </ul>
+
+        <div class="divider"></div>
+        <div class="section-title">Weaknesses</div>
+        <ul class="weakness-list">
+            {% for w in lore.weaknesses %}
+            <li>{{ w }}</li>
+            {% endfor %}
+        </ul>
+
+        <div class="divider"></div>
+        <div class="section-title">Named Roster</div>
+        <div class="roster-grid">
+            {% for c in roster[:60] %}
+            <div class="char-card {{ 'dead' if c.status == 'dead' else '' }} {{ 'legendary' if c.is_legendary else '' }}">
+                <div class="c-name">{{ c.name }}{% if c.is_legendary %} ⭐{% endif %}</div>
+                <div class="c-role">{{ c.role.replace('_', ' ') }} · {{ c.status }}</div>
+                {% if c.notable_deeds %}<div class="c-deed">{{ c.notable_deeds[-1] }}</div>{% endif %}
+            </div>
+            {% else %}
+            <div class="empty-state">No named characters recorded yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div>
+        <div class="section-title">Evolution Path</div>
+        <div class="evolution-track">
+            {% for stage in lore.evolution_path %}
+            <div class="evo-step {{ 'reached' if loop.index0 <= evolution_index else '' }}">
+                <span class="dot"></span>
+                <div>
+                    <div class="stage-name">{{ stage.stage }} <span style="color:var(--text-muted);font-weight:400;">(Year {{ stage.year }})</span></div>
+                    <div class="stage-desc">{{ stage.desc }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="divider"></div>
+        <div class="section-title">Relations</div>
+        {% for r in relations %}
+        <div class="relation-row">
+            <span>{{ r.icon }} <a href="{{ url_for('clan_page', clan_name=r.clan) }}">{{ r.clan }}</a></span>
+            <span class="rel-status" style="color: {{ r.color }}">{{ r.status }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="divider"></div>
+<div class="section-title">Recent Events Involving {{ clan_name }}</div>
+<div class="event-list">
+    {% for e in events[:25] %}
+    <div class="event-item" style="--ev-accent: {{ lore.color }}">
+        <div class="e-head">
+            <span class="badge {{ e.severity }}">{{ e.severity }}</span>
+            <span class="e-title">{{ e.title }}</span>
+            <span class="e-year">Year {{ e.sim_year }}</span>
+        </div>
+        <div class="e-narrative">{{ e.narrative }}</div>
+    </div>
+    {% else %}
+    <div class="empty-state">Nothing has happened to the {{ clan_name }} yet.</div>
+    {% endfor %}
+</div>
+
+{% endblock %}
