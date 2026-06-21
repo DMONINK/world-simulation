@@ -1,0 +1,373 @@
+/* ===========================================================================
+   World Simulation — Dark Fantasy Theme
+   Charcoal/slate backgrounds, parchment text, per-clan accent colors.
+   Monospace for event logs, serif for the chronicle, clean sans for UI chrome.
+=========================================================================== */
+
+:root {
+    --bg-deep: #0e0e12;
+    --bg-base: #15151b;
+    --bg-panel: #1c1c24;
+    --bg-panel-raised: #23232d;
+    --border: #2e2e3a;
+    --border-soft: #25252f;
+    --text-parchment: #e8dfc8;
+    --text-parchment-dim: #b8ad95;
+    --text-muted: #79798a;
+    --gold: #f4c430;
+
+    --c-aura: #f4c430;
+    --c-arcane: #8b5cf6;
+    --c-iron: #64748b;
+    --c-sylvan: #22c55e;
+    --c-void: #dc2626;
+    --c-stone: #78716c;
+
+    --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "SF Mono", "Cascadia Code", Consolas, "Courier New", monospace;
+    --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: radial-gradient(ellipse at top, #1a1a22 0%, var(--bg-deep) 70%);
+    color: var(--text-parchment);
+    font-family: var(--font-ui);
+    min-height: 100vh;
+}
+
+a { color: var(--gold); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ----------------------------- Top navigation ---------------------------- */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+    background: linear-gradient(180deg, #18181f, #14141a);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+.brand {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-parchment);
+    letter-spacing: 0.02em;
+}
+.brand span { color: var(--gold); }
+.topnav { display: flex; gap: 22px; }
+.topnav a {
+    color: var(--text-parchment-dim);
+    font-size: 0.92rem;
+    font-weight: 600;
+    padding: 6px 2px;
+    border-bottom: 2px solid transparent;
+}
+.topnav a:hover { color: var(--text-parchment); text-decoration: none; }
+.topnav a.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+.page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 60px;
+}
+
+.footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    padding: 20px;
+    border-top: 1px solid var(--border-soft);
+}
+
+/* ----------------------------- Generic bits ------------------------------ */
+.panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+}
+.section-title {
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 12px;
+}
+.divider {
+    border: none;
+    border-top: 1px solid var(--border-soft);
+    margin: 24px 0;
+}
+.badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+.badge.minor { background: #2a2a35; color: var(--text-parchment-dim); }
+.badge.major { background: #4a3414; color: #f4c430; }
+.badge.catastrophic { background: #4a1414; color: #ff6b6b; }
+
+.btn {
+    display: inline-block;
+    background: var(--bg-panel-raised);
+    border: 1px solid var(--border);
+    color: var(--text-parchment);
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn:hover { border-color: var(--gold); text-decoration: none; }
+
+/* ------------------------------ Dashboard -------------------------------- */
+.hero-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.hero-row h1 { font-size: 1.6rem; margin: 0; }
+.hero-row .meta { color: var(--text-muted); font-size: 0.9rem; }
+
+.clan-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+}
+.clan-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent, var(--gold));
+    border-radius: 10px;
+    padding: 16px 18px;
+}
+.clan-card .ch-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+.clan-card .ch-name {
+    font-weight: 700;
+    font-size: 1.02rem;
+    color: var(--accent, var(--text-parchment));
+}
+.clan-card .ch-stage {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+.clan-card .ch-stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--text-parchment-dim);
+}
+.clan-card .ch-stats b { color: var(--text-parchment); }
+.bar-track {
+    height: 6px;
+    border-radius: 100px;
+    background: #2a2a34;
+    margin-top: 10px;
+    overflow: hidden;
+}
+.bar-fill {
+    height: 100%;
+    background: var(--accent, var(--gold));
+}
+.status-tags { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+.tag {
+    font-size: 0.68rem;
+    padding: 2px 7px;
+    border-radius: 100px;
+    background: var(--bg-panel-raised);
+    color: var(--text-parchment-dim);
+    border: 1px solid var(--border);
+}
+.tag.danger { color: #ff6b6b; border-color: #5a2222; }
+.tag.eliminated { color: #555; border-color: #333; text-decoration: line-through; }
+
+.ascii-map {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    line-height: 10px;
+    white-space: pre;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    overflow-x: auto;
+    color: var(--text-parchment-dim);
+    letter-spacing: 1px;
+}
+
+.ticker {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px 0;
+    max-height: 360px;
+    overflow-y: auto;
+}
+.ticker-item {
+    display: flex;
+    gap: 10px;
+    padding: 9px 18px;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 0.85rem;
+    font-family: var(--font-mono);
+}
+.ticker-item:last-child { border-bottom: none; }
+.ticker-item .t-cat { color: var(--text-muted); width: 90px; flex-shrink: 0; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; padding-top: 2px; }
+.ticker-item .t-text { color: var(--text-parchment-dim); }
+.ticker-item .t-text b { color: var(--text-parchment); }
+
+.victory-banner {
+    background: linear-gradient(135deg, #2a2210, #1c1c24);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+.victory-banner h2 { color: var(--gold); margin: 0 0 8px; }
+
+/* -------------------------------- Map page -------------------------------- */
+.map-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+#mapCanvas {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #0b0b0e;
+    cursor: pointer;
+    image-rendering: pixelated;
+    max-width: 100%;
+}
+.map-sidebar {
+    flex: 1;
+    min-width: 240px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+}
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-parchment-dim); }
+.legend-dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+/* -------------------------------- Clan page ------------------------------- */
+.clan-hero {
+    border-radius: 12px;
+    padding: 26px 28px;
+    margin-bottom: 22px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, var(--bg-panel)), var(--bg-panel));
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent);
+}
+.clan-hero h1 { margin: 0 0 4px; color: var(--accent); font-size: 1.9rem; }
+.clan-hero .full-name { color: var(--text-parchment-dim); font-style: italic; margin-bottom: 14px; }
+.clan-hero .lore { color: var(--text-parchment-dim); line-height: 1.65; max-width: 760px; }
+
+.trait-list, .weakness-list { list-style: none; margin: 0; padding: 0; }
+.trait-list li, .weakness-list li {
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 0.88rem;
+    color: var(--text-parchment-dim);
+}
+.trait-list li b { color: var(--accent); display: block; font-size: 0.78rem; letter-spacing: 0.04em; margin-bottom: 2px; }
+.weakness-list li::before { content: "— "; color: #8a6a6a; }
+
+.two-col { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; margin-top: 22px; }
+@media (max-width: 880px) { .two-col { grid-template-columns: 1fr; } }
+
+.evolution-track { display: flex; flex-direction: column; gap: 8px; }
+.evo-step { display: flex; gap: 10px; align-items: baseline; font-size: 0.86rem; }
+.evo-step .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--border); flex-shrink: 0; margin-top: 4px; }
+.evo-step.reached .dot { background: var(--accent); }
+.evo-step.reached .stage-name { color: var(--text-parchment); font-weight: 700; }
+.evo-step .stage-name { color: var(--text-parchment-dim); font-weight: 600; }
+.evo-step .stage-desc { color: var(--text-muted); font-size: 0.8rem; }
+
+.roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.char-card {
+    background: var(--bg-panel-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 13px;
+}
+.char-card .c-name { font-weight: 700; font-size: 0.88rem; }
+.char-card .c-role { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+.char-card.dead { opacity: 0.55; }
+.char-card.legendary { border-color: var(--gold); }
+.char-card .c-deed { font-size: 0.76rem; color: var(--text-parchment-dim); margin-top: 6px; }
+
+.relation-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-soft); font-size: 0.85rem; }
+.relation-row .rel-status { font-size: 0.72rem; padding: 2px 8px; border-radius: 100px; background: var(--bg-panel-raised); }
+
+/* -------------------------------- Events page ------------------------------ */
+.filters { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+.filters select, .filters input {
+    background: var(--bg-panel-raised);
+    border: 1px solid var(--border);
+    color: var(--text-parchment);
+    padding: 8px 10px;
+    border-radius: 7px;
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+}
+.filters input { flex: 1; min-width: 180px; }
+
+.event-list { display: flex; flex-direction: column; gap: 10px; font-family: var(--font-mono); }
+.event-item {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--ev-accent, var(--border));
+    border-radius: 8px;
+    padding: 12px 16px;
+}
+.event-item .e-head { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
+.event-item .e-year { color: var(--text-muted); font-size: 0.74rem; }
+.event-item .e-title { font-weight: 700; color: var(--text-parchment); font-size: 0.88rem; }
+.event-item .e-clans { font-size: 0.72rem; color: var(--text-muted); }
+.event-item .e-narrative { color: var(--text-parchment-dim); font-size: 0.84rem; line-height: 1.55; }
+
+/* ------------------------------- Chronicle page ----------------------------- */
+.chronicle-entry {
+    font-family: var(--font-serif);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px 34px;
+    margin-bottom: 26px;
+    line-height: 1.7;
+    color: var(--text-parchment);
+    white-space: pre-wrap;
+}
+.chronicle-entry h2, .chronicle-entry strong { color: var(--gold); }
+.chronicle-year-label {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+/* ------------------------------- misc ------------------------------------- */
+.empty-state { color: var(--text-muted); font-style: italic; padding: 30px 0; text-align: center; }
