@@ -4,9 +4,9 @@ A fully automated civilization simulation: six fantasy clans evolve, expand, fig
 ally, and betray each other across a procedurally generated 200×200 world, with a
 live web dashboard and (optionally) yearly chronicle posts to Discord.
 
-## Running it on Replit
+## Running it
 
-1. **Import this project** into a new Replit (Python template).
+1. **Clone this project**
 2. **Install dependencies** — Replit should auto-install from `requirements.txt` on
    first run. If not: `pip install -r requirements.txt`.
 3. **(Optional) Set up Discord updates:**
