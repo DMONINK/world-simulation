@@ -7,9 +7,12 @@ live web dashboard and (optionally) yearly chronicle posts to Discord.
 ## Running it
 
 1. **Clone this project**
-2. **Install dependencies** — Replit should auto-install from `requirements.txt` on
+   ```bash
+   gh repo clone DMONINK/world-simulation
+   ```
+3. **Install dependencies** — Replit should auto-install from `requirements.txt` on
    first run. If not: `pip install -r requirements.txt`.
-3. **(Optional) Set up Discord updates:**
+4. **(Optional) Set up Discord updates:**
    - In your Discord server, create a webhook (Server Settings → Integrations → Webhooks).
    - Copy the webhook URL.
    - In Replit, open **Secrets** (the lock icon) and add:
@@ -17,11 +20,11 @@ live web dashboard and (optionally) yearly chronicle posts to Discord.
      - Value: *(paste your webhook URL)*
    - If you skip this, the simulation runs exactly the same — the yearly chronicle
      just won't post to Discord. You can still read it on the `/chronicle` page.
-4. **Click Run.** This executes `main.py`, which:
+5. **Click Run.** This executes `main.py`, which:
    - Generates the world on first run (takes under a second).
    - Starts the simulation ticking once per real second in a background thread.
    - Starts the web dashboard.
-5. Open the web preview — you'll land on the dashboard. Use the nav bar for the
+6. Open the web preview — you'll land on the dashboard. Use the nav bar for the
    **Map**, **Events** log, and **Chronicle**.
 
 The simulation **persists to SQLite** (`database/simulation.db`) and resumes exactly
